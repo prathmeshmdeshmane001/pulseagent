@@ -196,6 +196,61 @@ function ConnectContent() {
         </div>
       )}
 
+      {/* Gmail Notification Banners */}
+      {!bannerDismissed && (isGmailConnected || status === 'gmail_connected') && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>
+              <strong>Gmail Account Connected!</strong> PulseAgent has active access to search your Gmail threads and inbox updates live in Chat.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-emerald-700 hover:text-emerald-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {!bannerDismissed && !isGmailConnected && error === 'gmail_auth_failed' && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>
+              <strong>Gmail Authentication Failed:</strong> Please verify that Authorized redirect URIs in Google Cloud Console matches <code>http://localhost:8000/auth/gmail/callback</code> and your account is added under OAuth Consent Screen &gt; Test Users.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-rose-700 hover:text-rose-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {!bannerDismissed && status === 'missing_google_client_id' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>Configuration Notice:</strong> <code>GOOGLE_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-amber-700 hover:text-amber-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {integrations.map((item) => (
           <div

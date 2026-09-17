@@ -125,46 +125,72 @@ async def notion_callback(
 
 # --- Google / Gmail OAuth ---
 @router.get("/gmail/login")
-async def gmail_login():
+async def gmail_login(request: Request):
     client_id = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
     redirect_uri = os.getenv("GOOGLE_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/gmail/callback")
-    if not client_id:
-        return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=missing_google_client_id")
     
+    origin = FRONTEND_URL
+    referer = request.headers.get("referer")
+    if referer:
+        from urllib.parse import urlparse
+        parsed = urlparse(referer)
+        if parsed.scheme and parsed.netloc:
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+
+    if not client_id:
+        return RedirectResponse(url=f"{origin}/connect?status=missing_google_client_id")
+    
+    import urllib.parse
     scopes = "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send"
-    url = (
-        f"https://accounts.google.com/o/oauth2/v2/auth?"
-        f"client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope={scopes}&access_type=offline&prompt=consent"
-    )
+    params = {
+        "client_id": client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": scopes,
+        "access_type": "offline",
+        "prompt": "consent",
+        "state": origin
+    }
+    url = f"https://accounts.google.com/o/oauth2/v2/auth?{urllib.parse.urlencode(params)}"
     return RedirectResponse(url=url)
 
 @router.get("/gmail/callback")
-async def gmail_callback(code: str = Query(...), db: AsyncSession = Depends(get_db)):
+async def gmail_callback(
+    code: str = Query(...),
+    state: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    target_frontend = state if state and state.startswith("http") else FRONTEND_URL
     client_id = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
     client_secret = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
     redirect_uri = os.getenv("GOOGLE_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/gmail/callback")
 
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            "https://oauth2.googleapis.com/token",
-            data={
-                "code": code,
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "redirect_uri": redirect_uri,
-                "grant_type": "authorization_code"
-            }
-        )
-        if res.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}/connect?error=gmail_auth_failed")
-        data = res.json()
-        access_token = data.get("access_token")
-        refresh_token = data.get("refresh_token")
-        expires_in = data.get("expires_in")
-        if access_token:
-            await store_token("gmail", "default_user", access_token, refresh_token, expires_in, db)
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                "https://oauth2.googleapis.com/token",
+                data={
+                    "code": code,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "redirect_uri": redirect_uri,
+                    "grant_type": "authorization_code"
+                }
+            )
+            if res.status_code != 200:
+                print(f"Gmail OAuth Error: {res.status_code} - {res.text}")
+                return RedirectResponse(url=f"{target_frontend}/connect?error=gmail_auth_failed")
+            data = res.json()
+            access_token = data.get("access_token")
+            refresh_token = data.get("refresh_token")
+            expires_in = data.get("expires_in")
+            if access_token:
+                await store_token("gmail", "default_user", access_token, refresh_token, expires_in, db)
 
-    return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=gmail_connected")
+        return RedirectResponse(url=f"{target_frontend}/connect?status=gmail_connected")
+    except Exception as e:
+        print(f"Gmail OAuth exception: {e}")
+        return RedirectResponse(url=f"{target_frontend}/connect?error=gmail_auth_failed")
 
 # --- Atlassian Jira OAuth ---
 # --- Atlassian Jira OAuth ---
