@@ -64,3 +64,45 @@ export async function getTrace(sessionId: string): Promise<TraceStep[]> {
   }
   return res.json();
 }
+
+export interface ActionItem {
+  id: number;
+  session_id: string;
+  action_description: string;
+  status: 'pending' | 'approved' | 'denied';
+  created_at?: string;
+}
+
+export async function getPendingActions(): Promise<ActionItem[]> {
+  const res = await fetch(`${API_BASE}/actions/pending`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch pending actions');
+  return res.json();
+}
+
+export async function getAllActions(): Promise<ActionItem[]> {
+  const res = await fetch(`${API_BASE}/actions/all`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch all actions');
+  return res.json();
+}
+
+export async function approveAction(id: number): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/actions/${id}/approve`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to approve action');
+  return res.json();
+}
+
+export async function denyAction(id: number): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/actions/${id}/deny`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to deny action');
+  return res.json();
+}
+
+export async function simulateRiskyAction(desc?: string): Promise<ActionItem> {
+  const res = await fetch(`${API_BASE}/actions/simulate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action_description: desc }),
+  });
+  if (!res.ok) throw new Error('Failed to simulate action');
+  return res.json();
+}

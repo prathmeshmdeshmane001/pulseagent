@@ -17,7 +17,7 @@ export default function HomePage() {
         PulseAgent decomposes complex queries, queries live SaaS data sources, verifies citations with Groq entailment, safeguards PII, and maintains persistent cross-session memory.
       </p>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+      <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
         <Link
           href="/chat"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-medium shadow-sm transition-all"
@@ -25,10 +25,22 @@ export default function HomePage() {
           Open Chat <ArrowRight className="w-4 h-4" />
         </Link>
         <Link
+          href="/architecture"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-all shadow-xs"
+        >
+          Explore Architecture
+        </Link>
+        <Link
           href="/trace"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-all"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-all shadow-xs"
         >
           Inspect Trace Timeline
+        </Link>
+        <Link
+          href="/approvals"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-all shadow-xs"
+        >
+          Human Approvals
         </Link>
       </div>
 

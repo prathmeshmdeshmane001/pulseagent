@@ -21,12 +21,17 @@ export default function RootLayout({
               <span className="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-black text-lg">P</span>
               <span>Pulse<span className="text-sky-600">Agent</span></span>
             </Link>
-            <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
+            <nav className="flex items-center gap-5 text-sm font-medium text-slate-600">
               <Link href="/chat" className="hover:text-sky-600 transition-colors">Chat</Link>
-              <Link href="/trace" className="hover:text-sky-600 transition-colors">Trace Viewer</Link>
+              <Link href="/trace" className="hover:text-sky-600 transition-colors">Trace</Link>
+              <Link href="/approvals" className="hover:text-sky-600 transition-colors flex items-center gap-1">
+                Approvals
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              </Link>
+              <Link href="/architecture" className="hover:text-sky-600 transition-colors">Architecture</Link>
               <Link href="/connect" className="hover:text-sky-600 transition-colors">Integrations</Link>
               <a
-                href="http://localhost:8000/docs"
+                href={process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/docs` : 'http://localhost:8000/docs'}
                 target="_blank"
                 rel="noreferrer"
                 className="text-xs px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition-colors"

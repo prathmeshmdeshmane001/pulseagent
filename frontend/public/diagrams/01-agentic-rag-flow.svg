@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fafc" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="480" fill="#f1f5f9" rx="16" />
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#0f172a">PulseAgent — Multi-Source Agentic RAG Architecture</text>
+
+  <!-- User Input -->
+  <g transform="translate(350, 70)" filter="url(#shadow)">
+    <rect width="200" height="50" rx="8" fill="url(#primary)" />
+    <text x="100" y="30" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ffffff">User Complex Query</text>
+  </g>
+
+  <!-- Arrow down -->
+  <path d="M 450 120 L 450 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Decompose Node -->
+  <g transform="translate(310, 150)" filter="url(#shadow)">
+    <rect width="280" height="55" rx="8" fill="url(#cardBg)" stroke="#38bdf8" stroke-width="2" />
+    <text x="140" y="26" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0369a1">Query Decomposition (Gemini)</text>
+    <text x="140" y="44" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#64748b">Generates 2-4 sub-questions with tool routing</text>
+  </g>
+
+  <!-- Branching Arrows -->
+  <path d="M 370 205 L 170 260" stroke="#0284c7" stroke-width="2" />
+  <path d="M 450 205 L 450 260" stroke="#0284c7" stroke-width="2" />
+  <path d="M 530 205 L 730 260" stroke="#0284c7" stroke-width="2" />
+
+  <!-- Tools Row -->
+  <!-- Notion -->
+  <g transform="translate(70, 260)" filter="url(#shadow)">
+    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Notion MCP</text>
+    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Architecture Docs &amp; Specs</text>
+  </g>
+
+  <!-- Gmail -->
+  <g transform="translate(350, 260)" filter="url(#shadow)">
+    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Gmail MCP</text>
+    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Threads, Notes &amp; Updates</text>
+  </g>
+
+  <!-- Jira -->
+  <g transform="translate(630, 260)" filter="url(#shadow)">
+    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Jira MCP</text>
+    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Tickets, Bugs &amp; Blockers</text>
+  </g>
+
+  <!-- Convergence Arrows -->
+  <path d="M 170 330 L 370 375" stroke="#64748b" stroke-width="2" />
+  <path d="M 450 330 L 450 375" stroke="#64748b" stroke-width="2" />
+  <path d="M 730 330 L 530 375" stroke="#64748b" stroke-width="2" />
+
+  <!-- Aggregation & Synthesis -->
+  <g transform="translate(300, 375)" filter="url(#shadow)">
+    <rect width="300" height="65" rx="8" fill="#0f172a" />
+    <text x="150" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#38bdf8">Synthesis + Citations [1], [2]</text>
+    <text x="150" y="48" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#94a3b8">Evidence Verification + Memory Integration</text>
+  </g>
+</svg>
