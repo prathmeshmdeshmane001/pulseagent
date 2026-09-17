@@ -6,10 +6,22 @@ export interface Evidence {
   page_title: string;
 }
 
+export interface SubQuestion {
+  id: string;
+  text: string;
+  sources: string[];
+}
+
 export interface ChatResponse {
   answer: string;
   evidence: Evidence[];
-  session_id?: string;
+  session_id: string;
+  guardrail_blocked?: boolean;
+  refusal_reason?: string | null;
+  sub_questions?: SubQuestion[];
+  memories_used?: string[];
+  total_tokens?: number;
+  total_latency_ms?: number;
 }
 
 export interface TraceStep {
@@ -23,7 +35,7 @@ export interface TraceStep {
   created_at?: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+export const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 export async function checkHealth(): Promise<{ status: string }> {
   const res = await fetch(`${API_BASE}/health`, { cache: 'no-store' });

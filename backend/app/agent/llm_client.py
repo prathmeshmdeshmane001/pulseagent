@@ -119,18 +119,18 @@ class LLMClient:
     def _mock_gemini_response(self, prompt: str, json_mode: bool) -> str:
         prompt_lower = prompt.lower()
 
-        # 1. Decomposition request
-        if "sub-questions" in prompt_lower or "decompose" in prompt_lower:
+        # 1. Decomposition request (only if JSON mode is requested AND query explicitly asks to decompose)
+        if json_mode and ("decomposition node" in prompt_lower or "decompose the following" in prompt_lower or "sub-question" in prompt_lower):
             return json.dumps({
                 "sub_questions": [
-                    {"text": "What are the primary goals and project requirements?", "sources": ["notion"]},
-                    {"text": "What are the latest progress updates and sprint tasks?", "sources": ["jira"]},
-                    {"text": "Were there any blockers or communications reported recently?", "sources": ["gmail"]}
+                    {"id": "sq_1", "text": "What are the primary goals and project requirements?", "sources": ["notion"]},
+                    {"id": "sq_2", "text": "What are the latest progress updates and sprint tasks?", "sources": ["jira"]},
+                    {"id": "sq_3", "text": "Were there any blockers or communications reported recently?", "sources": ["gmail"]}
                 ]
             })
 
         # 2. Durable facts / memory extraction
-        if "durable" in prompt_lower or "facts" in prompt_lower:
+        if json_mode and ("durable" in prompt_lower or "facts" in prompt_lower):
             return json.dumps({
                 "facts": [
                     "Project X target release is end of Q3.",
@@ -146,21 +146,20 @@ class LLMClient:
                     {"text": "Core sprint milestones and deliverables are tracked in Jira.", "citation_indices": [2]}
                 ],
                 "citations": [
-                    {"index": 1, "source": "notion", "permalink": "https://notion.so/project-x", "snippet": "Project X specifications"},
-                    {"index": 2, "source": "jira", "permalink": "https://jira.atlassian.com/PROJ-101", "snippet": "Sprint tasks"}
+                    {"index": 1, "source": "notion", "permalink": "https://notion.so/pulseagent/project-x-architecture", "snippet": "Project X specifications"},
+                    {"index": 2, "source": "jira", "permalink": "https://pulseagent.atlassian.net/browse/PROJ-101", "snippet": "Sprint tasks"}
                 ],
                 "confidence": 0.95
             })
 
-        # 4. Default synthesis answer with citations
-        if "evidence" in prompt_lower or "notion" in prompt_lower:
-            return (
-                "Based on the retrieved documentation, Project X is actively underway [1]. "
-                "The engineering objectives focus on unified cross-platform RAG with strict guardrails [2]. "
-                "All tasks and deliverables remain aligned with current roadmap priorities [1]."
-            )
-
-        return "PulseAgent retrieved relevant context and verified the request."
+        # 4. Synthesis default markdown answer with citations
+        return (
+            "Based on the retrieved records across Notion, Gmail, and Jira:\n\n"
+            "• **Architecture & Objectives**: Project X is actively underway as a unified cross-platform RAG agent [1].\n"
+            "• **Sprint Milestones**: High-priority tasks (PROJ-101) for query decomposition and parallel MCP retrieval are in progress [3].\n"
+            "• **Security & Memory**: Guardrails enforce strict PII masking, citation validation, and long-term memory persistence [2], [4].\n\n"
+            "All retrieved evidence items have been verified against active project records [1]."
+        )
 
     def _mock_groq_response(self, prompt: str) -> str:
         prompt_lower = prompt.lower()

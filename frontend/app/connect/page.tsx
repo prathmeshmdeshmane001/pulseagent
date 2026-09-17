@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Mail, FileText, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 
 interface Integration {
   id: string;
@@ -19,7 +20,7 @@ export default function ConnectPage() {
       name: 'Notion',
       description: 'Search workspaces, documents, notes, and task databases.',
       icon: 'file-text',
-      authUrl: 'http://localhost:8000/auth/notion/login',
+      authUrl: `${API_BASE}/auth/notion/login`,
       connected: false,
     },
     {
@@ -27,7 +28,7 @@ export default function ConnectPage() {
       name: 'Gmail',
       description: 'Search threads, emails, project communications, and updates.',
       icon: 'mail',
-      authUrl: 'http://localhost:8000/auth/gmail/login',
+      authUrl: `${API_BASE}/auth/gmail/login`,
       connected: false,
     },
     {
@@ -35,14 +36,14 @@ export default function ConnectPage() {
       name: 'Atlassian Jira',
       description: 'Track issues, tickets, sprint goals, bugs, and project blockers.',
       icon: 'check-square',
-      authUrl: 'http://localhost:8000/auth/jira/login',
+      authUrl: `${API_BASE}/auth/jira/login`,
       connected: false,
     },
   ]);
 
   useEffect(() => {
     // Check connection status from backend
-    fetch('http://localhost:8000/auth/status')
+    fetch(`${API_BASE}/auth/status`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data && data.providers) {

@@ -1,22 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Clock, Cpu, ArrowDown, ExternalLink } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Search, Clock, Cpu, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { getTrace, TraceStep } from '@/lib/api';
 
-export default function TracePage() {
-  const [sessionId, setSessionId] = useState('');
+function TraceContent() {
+  const searchParams = useSearchParams();
+  const initialSession = searchParams.get('session_id') || '';
+  const [sessionId, setSessionId] = useState(initialSession);
   const [steps, setSteps] = useState<TraceStep[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  async function fetchTrace(e?: React.FormEvent) {
-    if (e) e.preventDefault();
-    if (!sessionId.trim()) return;
+  async function loadTraceForSession(id: string) {
+    if (!id.trim()) return;
     setLoading(true);
     setSearched(true);
     try {
-      const data = await getTrace(sessionId.trim());
+      const data = await getTrace(id.trim());
       setSteps(data);
     } catch (err: any) {
       console.error(err);
@@ -26,16 +29,36 @@ export default function TracePage() {
     }
   }
 
+  useEffect(() => {
+    if (initialSession) {
+      setSessionId(initialSession);
+      loadTraceForSession(initialSession);
+    }
+  }, [initialSession]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    loadTraceForSession(sessionId);
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
-      <div className="pb-6 border-b border-slate-200 mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Execution Trace Timeline</h1>
-        <p className="text-sm text-slate-600 mt-1">
-          Inspect node-by-node execution, latency, token usage, and guardrail decisions.
-        </p>
+      <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Execution Trace Timeline</h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Inspect node-by-node execution, latency, token usage, and guardrail decisions.
+          </p>
+        </div>
+        <Link
+          href="/chat"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Chat
+        </Link>
       </div>
 
-      <form onSubmit={fetchTrace} className="flex gap-3 mb-8">
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-8">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
           <input
@@ -107,5 +130,13 @@ export default function TracePage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function TracePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading trace timeline...</div>}>
+      <TraceContent />
+    </Suspense>
   );
 }

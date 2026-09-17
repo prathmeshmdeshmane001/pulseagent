@@ -17,12 +17,21 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     user_id: Optional[str] = "default_user"
 
+class SubQuestionResponse(BaseModel):
+    id: str
+    text: str
+    sources: List[str]
+
 class ChatResponse(BaseModel):
     answer: str
     evidence: List[Evidence]
     session_id: str
     guardrail_blocked: bool = False
     refusal_reason: Optional[str] = None
+    sub_questions: List[SubQuestionResponse] = []
+    memories_used: List[str] = []
+    total_tokens: int = 0
+    total_latency_ms: int = 0
 
 class TraceStepResponse(BaseModel):
     id: Optional[int] = None
@@ -75,12 +84,25 @@ async def chat_endpoint(payload: ChatRequest, db: AsyncSession = Depends(get_db)
     db.add(asst_msg)
     await db.commit()
 
+    sub_qs = [
+        SubQuestionResponse(
+            id=getattr(sq, "id", f"sq_{i}"),
+            text=getattr(sq, "text", str(sq)),
+            sources=getattr(sq, "sources", ["all"])
+        )
+        for i, sq in enumerate(state.sub_questions, 1)
+    ]
+
     return ChatResponse(
         answer=state.final_answer,
         evidence=state.evidence,
         session_id=session_id,
         guardrail_blocked=state.guardrail_blocked,
-        refusal_reason=state.guardrail_reason
+        refusal_reason=state.guardrail_reason,
+        sub_questions=sub_qs,
+        memories_used=state.memories,
+        total_tokens=state.total_tokens,
+        total_latency_ms=state.total_latency_ms
     )
 
 @router.get("/trace/{session_id}", response_model=List[TraceStepResponse])
