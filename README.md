@@ -40,6 +40,8 @@ Real-world enterprise RAG requires multi-layered security. PulseAgent protects a
 
 PulseAgent incorporates an automated evaluation harness (`eval/runner.py`) running across **5 distinct testset buckets** (95 test cases). In CI, tests run against seeded mock fixtures (`eval/fixtures/`) to guarantee deterministic results without incurring API costs or rate-limiting live accounts.
 
+![5-Bucket Evaluation Suite](docs/diagrams/eval-suite.svg)
+
 ![Continuous Evaluation & CI Metrics](docs/diagrams/04-eval-ci-metrics.svg)
 
 ### Latest Evaluation Report (`eval/report/eval_report.json`)

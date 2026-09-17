@@ -1,76 +1,240 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="100%" height="100%">
   <defs>
-    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0284c7" />
-      <stop offset="100%" stop-color="#0369a1" />
-    </linearGradient>
-    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" />
-      <stop offset="100%" stop-color="#f8fafc" />
-    </linearGradient>
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.08" />
+    <!-- Filters & Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06" />
     </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0d9488" />
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+    </marker>
   </defs>
 
-  <!-- Background -->
-  <rect width="900" height="480" fill="#f1f5f9" rx="16" />
+  <!-- Clean Background -->
+  <rect width="1200" height="660" fill="#ffffff" />
 
-  <!-- Title -->
-  <text x="450" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#0f172a">PulseAgent — Multi-Source Agentic RAG Architecture</text>
-
-  <!-- User Input -->
-  <g transform="translate(350, 70)" filter="url(#shadow)">
-    <rect width="200" height="50" rx="8" fill="url(#primary)" />
-    <text x="100" y="30" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ffffff">User Complex Query</text>
+  <!-- 1. USER QUESTION (Left) -->
+  <g transform="translate(45, 230)" filter="url(#cardShadow)">
+    <!-- Speech bubble shape -->
+    <rect width="140" height="85" rx="16" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" />
+    <path d="M 50 85 L 35 105 L 65 85 Z" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round" />
+    <!-- cover border line inside tail -->
+    <rect x="40" y="82" width="30" height="5" fill="#ffffff" />
+    <text x="70" y="38" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" fill="#1e293b">Summarize</text>
+    <text x="70" y="62" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" fill="#1e293b">Project X...?</text>
+    <text x="70" y="130" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#0f172a">User Question</text>
   </g>
 
-  <!-- Arrow down -->
-  <path d="M 450 120 L 450 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+  <!-- Arrow: User Question -> Decompose -->
+  <path d="M 185 272 L 235 272" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowBlue)" />
 
-  <!-- Decompose Node -->
-  <g transform="translate(310, 150)" filter="url(#shadow)">
-    <rect width="280" height="55" rx="8" fill="url(#cardBg)" stroke="#38bdf8" stroke-width="2" />
-    <text x="140" y="26" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0369a1">Query Decomposition (Gemini)</text>
-    <text x="140" y="44" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#64748b">Generates 2-4 sub-questions with tool routing</text>
+  <!-- 2. DECOMPOSE NODE -->
+  <g transform="translate(245, 222)" filter="url(#cardShadow)">
+    <rect width="100" height="100" rx="16" fill="#ffffff" stroke="#0d9488" stroke-width="2.5" />
+    <!-- Hierarchy Decomposition Icon -->
+    <circle cx="50" cy="35" r="5.5" fill="#0d9488" />
+    <circle cx="32" cy="55" r="4" fill="#0d9488" />
+    <circle cx="50" cy="55" r="4" fill="#0d9488" />
+    <circle cx="68" cy="55" r="4" fill="#0d9488" />
+    <path d="M 50 40 L 50 48 M 50 48 L 32 52 M 50 48 L 68 52" stroke="#0d9488" stroke-width="2" stroke-linecap="round" />
+    <text x="50" y="80" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="700" fill="#0f172a">Decompose</text>
   </g>
 
-  <!-- Branching Arrows -->
-  <path d="M 370 205 L 170 260" stroke="#0284c7" stroke-width="2" />
-  <path d="M 450 205 L 450 260" stroke="#0284c7" stroke-width="2" />
-  <path d="M 530 205 L 730 260" stroke="#0284c7" stroke-width="2" />
+  <!-- 3. MCP BOUNDING CONTAINER -->
+  <g transform="translate(370, 70)">
+    <!-- Dashed Orange Bounding Box -->
+    <rect width="490" height="420" rx="24" fill="#fffdfa" stroke="#f97316" stroke-width="2.5" stroke-dasharray="8,6" />
+    <!-- Top MCP Badge -->
+    <rect x="205" y="-14" width="80" height="28" rx="8" fill="#ea580c" />
+    <text x="245" y="5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff" letter-spacing="1">MCP</text>
 
-  <!-- Tools Row -->
-  <!-- Notion -->
-  <g transform="translate(70, 260)" filter="url(#shadow)">
-    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
-    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Notion MCP</text>
-    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Architecture Docs &amp; Specs</text>
+    <!-- Branch line from Decompose to sub-questions -->
+    <path d="M -25 202 C 5 202, 5 60, 20 60" fill="none" stroke="#0d9488" stroke-width="2" />
+    <path d="M -25 202 C 5 202, 5 155, 20 155" fill="none" stroke="#0d9488" stroke-width="2" />
+    <path d="M -25 202 C 5 202, 5 250, 20 250" fill="none" stroke="#0d9488" stroke-width="2" />
+    <path d="M -25 202 C 5 202, 5 345, 20 345" fill="none" stroke="#0d9488" stroke-width="2" />
+
+    <!-- Sub-question 1: Project goals? -->
+    <g transform="translate(20, 32)" filter="url(#cardShadow)">
+      <rect width="165" height="56" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+      <!-- Target Icon 🎯 -->
+      <circle cx="28" cy="28" r="12" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5" />
+      <circle cx="28" cy="28" r="7" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5" />
+      <circle cx="28" cy="28" r="2.5" fill="#0d9488" />
+      <text x="50" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="600" fill="#0f172a">Project goals?</text>
+    </g>
+
+    <!-- Sub-question 2: Tasks this quarter? -->
+    <g transform="translate(20, 127)" filter="url(#cardShadow)">
+      <rect width="165" height="56" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+      <!-- Checklist Icon 📋 -->
+      <rect x="18" y="18" width="18" height="20" rx="3" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5" />
+      <line x1="22" y1="23" x2="30" y2="23" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="22" y1="28" x2="30" y2="28" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="22" y1="33" x2="27" y2="33" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round" />
+      <text x="46" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Tasks this quarter?</text>
+    </g>
+
+    <!-- Sub-question 3: Deadlines changed? -->
+    <g transform="translate(20, 222)" filter="url(#cardShadow)">
+      <rect width="165" height="56" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+      <!-- Calendar Icon 📅 -->
+      <rect x="18" y="18" width="20" height="19" rx="3" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5" />
+      <line x1="18" y1="24" x2="38" y2="24" stroke="#0d9488" stroke-width="1.5" />
+      <circle cx="23" cy="29" r="1.5" fill="#0d9488" />
+      <circle cx="28" cy="29" r="1.5" fill="#0d9488" />
+      <circle cx="33" cy="29" r="1.5" fill="#0d9488" />
+      <text x="47" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Deadlines changed?</text>
+    </g>
+
+    <!-- Sub-question 4: Blockers reported? -->
+    <g transform="translate(20, 317)" filter="url(#cardShadow)">
+      <rect width="165" height="56" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+      <!-- Alert Triangle Icon ⚠️ -->
+      <path d="M 28 17 L 39 37 L 17 37 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round" />
+      <line x1="28" y1="24" x2="28" y2="29" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" />
+      <circle cx="28" cy="33" r="1" fill="#b45309" />
+      <text x="48" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Blockers reported?</text>
+    </g>
+
+    <!-- Connectors: Sub-questions -> SaaS Tools -->
+    <path d="M 185 60 L 225 60" stroke="#0d9488" stroke-width="2" marker-end="url(#arrowTeal)" />
+    <path d="M 185 155 L 225 190" stroke="#0d9488" stroke-width="2" marker-end="url(#arrowTeal)" />
+    <path d="M 185 250 L 225 210" stroke="#0d9488" stroke-width="2" marker-end="url(#arrowTeal)" />
+    <path d="M 185 345 L 225 345" stroke="#0d9488" stroke-width="2" marker-end="url(#arrowTeal)" />
+
+    <!-- SAAS TOOL 1: GMAIL -->
+    <g transform="translate(235, 25)" filter="url(#cardShadow)">
+      <rect width="75" height="75" rx="16" fill="#ffffff" stroke="#6366f1" stroke-width="2" />
+      <!-- Gmail M Logo -->
+      <g transform="translate(20, 16) scale(0.9)">
+        <path d="M 2 4 L 18 16 L 34 4" fill="none" stroke="#ea4335" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="2" y="4" width="32" height="24" rx="3" fill="none" stroke="#4285f4" stroke-width="3" />
+        <path d="M 2 7 L 18 18 L 34 7" stroke="#ea4335" stroke-width="3" fill="none" />
+      </g>
+      <text x="37" y="65" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">Gmail</text>
+    </g>
+
+    <!-- SAAS TOOL 2: NOTION -->
+    <g transform="translate(235, 160)" filter="url(#cardShadow)">
+      <rect width="75" height="75" rx="16" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+      <!-- Notion N Logo -->
+      <text x="37" y="40" text-anchor="middle" font-family="serif" font-size="28" font-weight="900" fill="#0f172a">N</text>
+      <text x="37" y="65" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">Notion</text>
+    </g>
+
+    <!-- SAAS TOOL 3: JIRA -->
+    <g transform="translate(235, 295)" filter="url(#cardShadow)">
+      <rect width="75" height="75" rx="16" fill="#ffffff" stroke="#0052cc" stroke-width="2" />
+      <!-- Jira Diamond Logo -->
+      <g transform="translate(25, 14) scale(0.9)">
+        <path d="M 14 0 L 26 12 L 14 24 L 2 12 Z" fill="#0052cc" />
+        <path d="M 14 6 L 20 12 L 14 18 L 8 12 Z" fill="#ffffff" />
+      </g>
+      <text x="37" y="65" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">Jira</text>
+    </g>
+
+    <!-- Arrows: Tools -> Evidence -->
+    <path d="M 310 62 L 355 62" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowBlue)" />
+    <path d="M 310 197 L 355 197" stroke="#1e293b" stroke-width="2" marker-end="url(#arrowBlue)" />
+    <path d="M 310 332 L 355 332" stroke="#0052cc" stroke-width="2" marker-end="url(#arrowBlue)" />
+
+    <!-- EVIDENCE BOX 1 (from Gmail) -->
+    <g transform="translate(365, 34)" filter="url(#cardShadow)">
+      <rect width="90" height="58" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="2" />
+      <!-- Document icon with quotes 📄" -->
+      <path d="M 22 17 L 32 17 L 38 23 L 38 39 L 22 39 Z" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5" />
+      <text x="30" y="32" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#7c3aed">“</text>
+      <text x="58" y="34" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#6b21a8">Evidence</text>
+    </g>
+
+    <!-- EVIDENCE BOX 2 (from Notion) -->
+    <g transform="translate(365, 169)" filter="url(#cardShadow)">
+      <rect width="90" height="58" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="2" />
+      <path d="M 22 17 L 32 17 L 38 23 L 38 39 L 22 39 Z" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5" />
+      <text x="30" y="32" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#7c3aed">“</text>
+      <text x="58" y="34" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#6b21a8">Evidence</text>
+    </g>
+
+    <!-- EVIDENCE BOX 3 (from Jira) -->
+    <g transform="translate(365, 304)" filter="url(#cardShadow)">
+      <rect width="90" height="58" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="2" />
+      <path d="M 22 17 L 32 17 L 38 23 L 38 39 L 22 39 Z" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5" />
+      <text x="30" y="32" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#7c3aed">“</text>
+      <text x="58" y="34" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#6b21a8">Evidence</text>
+    </g>
   </g>
 
-  <!-- Gmail -->
-  <g transform="translate(350, 260)" filter="url(#shadow)">
-    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
-    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Gmail MCP</text>
-    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Threads, Notes &amp; Updates</text>
+  <!-- 4. EVIDENCE CONVERGENCE TO CITED ANSWER -->
+  <path d="M 825 133 C 865 133, 865 260, 895 260" fill="none" stroke="#7c3aed" stroke-width="2" />
+  <path d="M 825 267 L 895 267" fill="none" stroke="#7c3aed" stroke-width="2" />
+  <path d="M 825 402 C 865 402, 865 274, 895 274" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowPurple)" />
+
+  <!-- 5. CITED FINAL ANSWER (Right Speech Bubble) -->
+  <g transform="translate(905, 175)" filter="url(#cardShadow)">
+    <rect width="250" height="175" rx="18" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" />
+    <!-- speech bubble tail pointing down-left -->
+    <path d="M 40 175 L 20 198 L 60 175 Z" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round" />
+    <rect x="30" y="172" width="35" height="5" fill="#ffffff" />
+
+    <!-- Line 1 -->
+    <text x="18" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">Project X aims to expand</text>
+    <text x="18" y="55" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">into new markets.</text>
+    <text x="212" y="47" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#4f46e5">[1]</text>
+    <line x1="18" y1="67" x2="232" y2="67" stroke="#e2e8f0" stroke-width="1" />
+
+    <!-- Line 2 -->
+    <text x="18" y="87" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">12 key tasks are planned</text>
+    <text x="18" y="104" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">this quarter.</text>
+    <text x="212" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#4f46e5">[2]</text>
+    <line x1="18" y1="116" x2="232" y2="116" stroke="#e2e8f0" stroke-width="1" />
+
+    <!-- Line 3 -->
+    <text x="18" y="136" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">Two deadlines were</text>
+    <text x="18" y="153" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#1e293b">updated last week.</text>
+    <text x="212" y="145" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#4f46e5">[3]</text>
+
+    <!-- Title below -->
+    <text x="125" y="222" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Cited Final Answer</text>
   </g>
 
-  <!-- Jira -->
-  <g transform="translate(630, 260)" filter="url(#shadow)">
-    <rect width="200" height="70" rx="8" fill="url(#cardBg)" stroke="#cbd5e1" stroke-width="1.5" />
-    <text x="100" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Jira MCP</text>
-    <text x="100" y="48" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Tickets, Bugs &amp; Blockers</text>
+  <!-- 6. DUAL-TIER MEMORY (Bottom Left) -->
+  <g transform="translate(210, 480)" filter="url(#cardShadow)">
+    <rect width="170" height="70" rx="14" fill="#ffffff" stroke="#7c3aed" stroke-width="2" />
+    <!-- Brain Icon -->
+    <g transform="translate(18, 14)">
+      <path d="M 12 5 C 7 5, 4 9, 4 14 C 4 17, 6 20, 9 21 C 9 25, 12 28, 16 28 C 19 28, 22 26, 23 23 C 24 26, 27 28, 30 28 C 34 28, 37 25, 37 21 C 40 20, 42 17, 42 14 C 42 9, 39 5, 34 5 C 33 2, 29 1, 23 1 C 17 1, 13 2, 12 5 Z" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.6" />
+      <path d="M 23 4 L 23 25" stroke="#7c3aed" stroke-width="1.3" />
+    </g>
+    <text x="110" y="32" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="700" fill="#581c87">Memory</text>
+    <!-- Short-term / Long-term pills -->
+    <rect x="52" y="42" width="52" height="18" rx="5" fill="#f3e8ff" />
+    <text x="78" y="54" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="600" fill="#6b21a8">Short-term</text>
+    <rect x="108" y="42" width="50" height="18" rx="5" fill="#f3e8ff" />
+    <text x="133" y="54" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="600" fill="#6b21a8">Long-term</text>
+
+    <!-- Sub-badge: Project X = high priority -->
+    <g transform="translate(10, 80)">
+      <rect width="150" height="28" rx="8" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3" />
+      <text x="75" y="18" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600" fill="#6b21a8">Project X = high priority</text>
+    </g>
   </g>
 
-  <!-- Convergence Arrows -->
-  <path d="M 170 330 L 370 375" stroke="#64748b" stroke-width="2" />
-  <path d="M 450 330 L 450 375" stroke="#64748b" stroke-width="2" />
-  <path d="M 730 330 L 530 375" stroke="#64748b" stroke-width="2" />
+  <!-- Dashed Arrow: Memory UP to Decompose -->
+  <path d="M 295 480 L 295 330" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrowPurple)" />
 
-  <!-- Aggregation & Synthesis -->
-  <g transform="translate(300, 375)" filter="url(#shadow)">
-    <rect width="300" height="65" rx="8" fill="#0f172a" />
-    <text x="150" y="28" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#38bdf8">Synthesis + Citations [1], [2]</text>
-    <text x="150" y="48" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#94a3b8">Evidence Verification + Memory Integration</text>
-  </g>
+  <!-- Feedback Line: Cited Answer DOWN and into Memory -->
+  <path d="M 980 405 L 980 515 L 385 515" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowPurple)" />
+
 </svg>
