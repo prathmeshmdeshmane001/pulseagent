@@ -9,7 +9,11 @@ load_dotenv()
 
 raw_db_url = os.getenv("DATABASE_URL", "").strip()
 
-if not raw_db_url:
+if os.getenv("ENVIRONMENT") == "ci" and ("postgres" in raw_db_url):
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    db_file = os.path.join(base_dir, "pulseagent.db")
+    DATABASE_URL = f"sqlite+aiosqlite:///{db_file}"
+elif not raw_db_url:
     # Anchor SQLite database path to backend directory
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     db_file = os.path.join(base_dir, "pulseagent.db")
