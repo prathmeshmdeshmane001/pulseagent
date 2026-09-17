@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, Bot, User, Sparkles, ExternalLink, ShieldAlert } from 'lucide-react';
 import { sendChatMessage, Evidence } from '@/lib/api';
 
@@ -19,7 +19,11 @@ export default function ChatPage() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionId] = useState(() => 'sess_' + Math.random().toString(36).substring(2, 9));
+  const [sessionId, setSessionId] = useState('');
+
+  useEffect(() => {
+    setSessionId('sess_' + Math.random().toString(36).substring(2, 9));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,7 +62,9 @@ export default function ChatPage() {
       <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">PulseAgent Chat</h1>
-          <p className="text-xs text-slate-500 font-mono">Session ID: {sessionId}</p>
+          <p className="text-xs text-slate-500 font-mono" suppressHydrationWarning>
+            {sessionId ? `Session ID: ${sessionId}` : 'Session ID: initializing...'}
+          </p>
         </div>
       </div>
 
