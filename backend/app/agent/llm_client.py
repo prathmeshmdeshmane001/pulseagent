@@ -68,7 +68,22 @@ class LLMClient:
             return LLMResult(text=text, tokens_used=tokens, latency_ms=elapsed_ms)
 
         except Exception as e:
-            # Fallback to mock on rate limits or API errors to keep pipeline resilient
+            # Automatic failover to Groq (openai/gpt-oss-120b) when Gemini encounters 429 quota exhaustion or API errors
+            if self.groq_key and not self.mock_mode:
+                try:
+                    groq_res = await self.generate_groq(
+                        prompt=prompt,
+                        system_instruction=system_instruction,
+                        model="openai/gpt-oss-120b",
+                        temperature=temperature,
+                        json_mode=json_mode
+                    )
+                    if groq_res.text:
+                        return groq_res
+                except Exception:
+                    pass
+
+            # Final fallback to mock on rate limits or API errors to keep pipeline resilient
             elapsed_ms = int((time.perf_counter() - start_time) * 1000)
             mock_text = self._mock_gemini_response(prompt, json_mode)
             tokens = len(prompt.split()) + len(mock_text.split())
@@ -78,8 +93,9 @@ class LLMClient:
         self,
         prompt: str,
         system_instruction: Optional[str] = None,
-        model: str = "openai/gpt-oss-20b",
-        temperature: float = 0.0
+        model: str = "openai/gpt-oss-120b",
+        temperature: float = 0.0,
+        json_mode: bool = False
     ) -> LLMResult:
         start_time = time.perf_counter()
 
@@ -98,11 +114,15 @@ class LLMClient:
                 messages.append({"role": "system", "content": system_instruction})
             messages.append({"role": "user", "content": prompt})
 
-            completion = await client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature
-            )
+            kwargs: dict[str, Any] = {
+                "model": model,
+                "messages": messages,
+                "temperature": temperature
+            }
+            if json_mode:
+                kwargs["response_format"] = {"type": "json_object"}
+
+            completion = await client.chat.completions.create(**kwargs)
 
             elapsed_ms = int((time.perf_counter() - start_time) * 1000)
             text = completion.choices[0].message.content or ""
@@ -157,7 +177,7 @@ class LLMClient:
             "Based on the retrieved records across Notion, Gmail, and Jira:\n\n"
             "• **Architecture & Objectives**: Project X is actively underway as a unified cross-platform RAG agent [1].\n"
             "• **Sprint Milestones**: High-priority tasks (PROJ-101) for query decomposition and parallel MCP retrieval are in progress [3].\n"
-            "• **Security & Memory**: Guardrails enforce strict PII masking, citation validation, and long-term memory persistence [2], [4].\n\n"
+            "• **Security & Memory**: Guardrails enforce strict PII masking, citation validation, and long-term memory persistence [2].\n\n"
             "All retrieved evidence items have been verified against active project records [1]."
         )
 

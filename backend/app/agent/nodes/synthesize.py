@@ -51,9 +51,11 @@ async def synthesize_node(state: AgentState) -> dict:
         "latency_ms": latency_ms
     }
 
+    normalized_text = result.text.replace("【", "[").replace("】", "]")
+
     return {
-        "draft_answer": result.text,
-        "final_answer": result.text,
+        "draft_answer": normalized_text,
+        "final_answer": normalized_text,
         "total_tokens": state.total_tokens + result.tokens_used,
         "total_latency_ms": state.total_latency_ms + latency_ms,
         "trace_logs": state.trace_logs + [trace_entry]

@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from datetime import datetime, timezone
 from typing import List, Optional
 import httpx
@@ -31,6 +32,28 @@ MOCK_NOTION_FIXTURES = [
         "timestamp": "2026-09-10T16:00:00Z"
     }
 ]
+
+async def _fetch_block_text(client: httpx.AsyncClient, page_id: str, access_token: str) -> str:
+    try:
+        bres = await client.get(
+            f"https://api.notion.com/v1/blocks/{page_id}/children?page_size=12",
+            headers={"Authorization": f"Bearer {access_token}", "Notion-Version": "2022-06-28"},
+            timeout=4.0
+        )
+        if bres.status_code == 200:
+            texts = []
+            for b in bres.json().get("results", []):
+                btype = b.get("type", "")
+                if btype in b and "rich_text" in b[btype]:
+                    chunk = "".join(t.get("plain_text", "") for t in b[btype]["rich_text"]).strip()
+                    if chunk:
+                        prefix = f"{btype}: " if btype in ("heading_1", "heading_2", "heading_3", "to_do") else ""
+                        texts.append(f"{prefix}{chunk}")
+            if texts:
+                return " | ".join(texts)
+    except Exception:
+        pass
+    return ""
 
 async def search_notion(
     query: str,
@@ -69,15 +92,23 @@ async def search_notion(
                 )
                 if res.status_code == 200:
                     data = res.json()
+                    items = data.get("results", [])[:5]
+                    block_tasks = [_fetch_block_text(client, item.get("id", ""), access_token) for item in items]
+                    block_contents = await asyncio.gather(*block_tasks, return_exceptions=True)
+
                     results: List[Evidence] = []
-                    for item in data.get("results", []):
+                    for idx, item in enumerate(items):
                         title = "Untitled"
                         if "properties" in item and "title" in item["properties"]:
                             title_chunks = item["properties"]["title"].get("title", [])
                             if title_chunks:
                                 title = "".join(c.get("plain_text", "") for c in title_chunks)
+
+                        content_snippet = ""
+                        if idx < len(block_contents) and isinstance(block_contents[idx], str) and block_contents[idx]:
+                            content_snippet = f" Content: {block_contents[idx]}"
                         
-                        snippet = f"Notion document: {title}. Object type: {item.get('object', 'page')}."
+                        snippet = f"Notion document: {title}. Object type: {item.get('object', 'page')}.{content_snippet}"
                         url = item.get("url", f"https://notion.so/{item.get('id', '')}")
                         results.append(
                             Evidence(
