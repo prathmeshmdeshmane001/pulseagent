@@ -67,40 +67,61 @@ async def auth_status(user_id: str = "default_user", db: AsyncSession = Depends(
 
 # --- Notion OAuth ---
 @router.get("/notion/login")
-async def notion_login():
+async def notion_login(request: Request):
     client_id = os.getenv("NOTION_OAUTH_CLIENT_ID")
     redirect_uri = os.getenv("NOTION_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/notion/callback")
-    if not client_id:
-        # If client_id is not set, redirect back to frontend with a helpful flag
-        return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=missing_notion_client_id")
     
-    url = f"https://api.notion.com/v1/oauth/authorize?owner=user&client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+    # Detect caller frontend origin from referer or default to FRONTEND_URL
+    origin = FRONTEND_URL
+    referer = request.headers.get("referer")
+    if referer:
+        from urllib.parse import urlparse
+        parsed = urlparse(referer)
+        if parsed.scheme and parsed.netloc:
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+
+    if not client_id:
+        return RedirectResponse(url=f"{origin}/connect?status=missing_notion_client_id")
+    
+    url = f"https://api.notion.com/v1/oauth/authorize?owner=user&client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&state={origin}"
     return RedirectResponse(url=url)
 
 @router.get("/notion/callback")
-async def notion_callback(code: str = Query(...), db: AsyncSession = Depends(get_db)):
+async def notion_callback(
+    code: str = Query(...),
+    state: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    target_frontend = state if state and state.startswith("http") else FRONTEND_URL
     client_id = os.getenv("NOTION_OAUTH_CLIENT_ID", "")
     client_secret = os.getenv("NOTION_OAUTH_CLIENT_SECRET", "")
     redirect_uri = os.getenv("NOTION_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/notion/callback")
 
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            "https://api.notion.com/v1/oauth/token",
-            auth=(client_id, client_secret),
-            json={
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": redirect_uri
-            }
-        )
-        if res.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}/connect?error=notion_auth_failed")
-        data = res.json()
-        access_token = data.get("access_token")
-        if access_token:
-            await store_token("notion", "default_user", access_token, None, None, db)
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                "https://api.notion.com/v1/oauth/token",
+                auth=(client_id, client_secret),
+                headers={"Notion-Version": "2022-06-28"},
+                json={
+                    "grant_type": "authorization_code",
+                    "code": code,
+                    "redirect_uri": redirect_uri
+                }
+            )
+            if res.status_code != 200:
+                print(f"Notion OAuth Error: {res.status_code} - {res.text}")
+                return RedirectResponse(url=f"{target_frontend}/connect?error=notion_auth_failed")
+            data = res.json()
+            access_token = data.get("access_token")
+            refresh_token = data.get("refresh_token")
+            if access_token:
+                await store_token("notion", "default_user", access_token, refresh_token, None, db)
 
-    return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=notion_connected")
+        return RedirectResponse(url=f"{target_frontend}/connect?status=notion_connected")
+    except Exception as e:
+        print(f"Notion OAuth exception: {e}")
+        return RedirectResponse(url=f"{target_frontend}/connect?error=notion_auth_failed")
 
 # --- Google / Gmail OAuth ---
 @router.get("/gmail/login")

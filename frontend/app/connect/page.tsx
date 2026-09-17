@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Mail, FileText, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Mail, FileText, CheckCircle2, AlertCircle, ExternalLink, ShieldCheck, XCircle } from 'lucide-react';
 import { API_BASE } from '@/lib/api';
 
 interface Integration {
@@ -13,7 +14,11 @@ interface Integration {
   connected: boolean;
 }
 
-export default function ConnectPage() {
+function ConnectContent() {
+  const searchParams = useSearchParams();
+  const status = searchParams.get('status');
+  const error = searchParams.get('error');
+
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'notion',
@@ -58,7 +63,7 @@ export default function ConnectPage() {
       .catch(() => {
         // Dev fallback
       });
-  }, []);
+  }, [status]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
@@ -68,6 +73,34 @@ export default function ConnectPage() {
           Connect your live personal or workspace accounts via OAuth 2.0. In development or CI mode, PulseAgent falls back to fixture mocks automatically.
         </p>
       </div>
+
+      {/* OAuth Notification Banners */}
+      {status === 'notion_connected' && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 shadow-xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>
+            <strong>Success!</strong> Your Notion workspace has been authorized and connected to PulseAgent.
+          </span>
+        </div>
+      )}
+
+      {error === 'notion_auth_failed' && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 shadow-xs">
+          <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          <span>
+            <strong>Authentication Failed:</strong> Notion OAuth authorization code exchange encountered an error. Please ensure the redirect URI matches <code>http://localhost:8000/auth/notion/callback</code> in your Notion Integration settings.
+          </span>
+        </div>
+      )}
+
+      {status === 'missing_notion_client_id' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2 shadow-xs">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>
+            <strong>Configuration Notice:</strong> <code>NOTION_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {integrations.map((item) => (
@@ -81,7 +114,7 @@ export default function ConnectPage() {
                   {item.name[0]}
                 </div>
                 {item.connected ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Connected
                   </span>
                 ) : (
@@ -111,5 +144,13 @@ export default function ConnectPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function ConnectPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading integrations...</div>}>
+      <ConnectContent />
+    </Suspense>
   );
 }

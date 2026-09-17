@@ -46,6 +46,15 @@ async def search_jira(
     """
     is_ci = os.getenv("ENVIRONMENT") == "ci"
 
+    if access_token is None and not is_ci:
+        try:
+            from app.db.session import AsyncSessionLocal
+            from app.auth.router import get_decrypted_token
+            async with AsyncSessionLocal() as session:
+                access_token = await get_decrypted_token("jira", "default_user", session)
+        except Exception:
+            access_token = None
+
     if access_token and cloud_id and not is_ci:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
