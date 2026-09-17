@@ -65,6 +65,16 @@ function ConnectContent() {
       });
   }, [status]);
 
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const isNotionConnected = Boolean(integrations.find((i) => i.id === 'notion')?.connected);
+
+  const dismissBanner = () => {
+    setBannerDismissed(true);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
       <div className="pb-6 border-b border-slate-200 mb-8">
@@ -75,30 +85,57 @@ function ConnectContent() {
       </div>
 
       {/* OAuth Notification Banners */}
-      {status === 'notion_connected' && (
-        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 shadow-xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            <strong>Success!</strong> Your Notion workspace has been authorized and connected to PulseAgent.
-          </span>
+      {!bannerDismissed && (isNotionConnected || status === 'notion_connected') && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>
+              <strong>Notion Workspace Connected!</strong> PulseAgent has active access to search your Notion pages, notes, and task lists live in Chat.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-emerald-700 hover:text-emerald-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
         </div>
       )}
 
-      {error === 'notion_auth_failed' && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 shadow-xs">
-          <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-          <span>
-            <strong>Authentication Failed:</strong> Notion OAuth authorization code exchange encountered an error. Please ensure the redirect URI matches <code>http://localhost:8000/auth/notion/callback</code> in your Notion Integration settings.
-          </span>
+      {!bannerDismissed && !isNotionConnected && error === 'notion_auth_failed' && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>
+              <strong>Authentication Failed:</strong> Notion OAuth authorization code exchange encountered an error. Please ensure the redirect URI matches <code>http://localhost:8000/auth/notion/callback</code> in your Notion Integration settings.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-rose-700 hover:text-rose-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
         </div>
       )}
 
-      {status === 'missing_notion_client_id' && (
-        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2 shadow-xs">
-          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            <strong>Configuration Notice:</strong> <code>NOTION_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
-          </span>
+      {!bannerDismissed && status === 'missing_notion_client_id' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>Configuration Notice:</strong> <code>NOTION_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-amber-700 hover:text-amber-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -106,7 +143,7 @@ function ConnectContent() {
         {integrations.map((item) => (
           <div
             key={item.id}
-            className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col justify-between shadow-sm"
+            className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition-colors"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -130,16 +167,26 @@ function ConnectContent() {
               </p>
             </div>
 
-            <a
-              href={item.authUrl}
-              className={`w-full py-2 px-3 rounded-lg text-xs font-semibold text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
-                item.connected
-                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                  : 'bg-sky-600 hover:bg-sky-700 text-white'
-              }`}
-            >
-              {item.connected ? 'Reconnect' : 'Connect Account'} <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex flex-col gap-2">
+              {item.connected && (
+                <a
+                  href="/chat"
+                  className="w-full py-2 px-3 rounded-lg text-xs font-semibold text-center bg-emerald-600 hover:bg-emerald-700 text-white transition-colors inline-flex items-center justify-center gap-1.5"
+                >
+                  Query in Chat →
+                </a>
+              )}
+              <a
+                href={item.authUrl}
+                className={`w-full py-2 px-3 rounded-lg text-xs font-semibold text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
+                  item.connected
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    : 'bg-sky-600 hover:bg-sky-700 text-white'
+                }`}
+              >
+                {item.connected ? 'Reconnect' : 'Connect Account'} <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         ))}
       </div>
