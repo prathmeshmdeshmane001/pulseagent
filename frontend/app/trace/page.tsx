@@ -2,9 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Clock, Cpu, ArrowLeft } from 'lucide-react';
+import { Search, Clock, Cpu, ArrowLeft, CheckCircle2, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { getTrace, TraceStep } from '@/lib/api';
+import { getTrace, getRecentTraceSessions, TraceStep } from '@/lib/api';
 
 function TraceContent() {
   const searchParams = useSearchParams();
@@ -13,6 +13,7 @@ function TraceContent() {
   const [steps, setSteps] = useState<TraceStep[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [recentSessions, setRecentSessions] = useState<string[]>([]);
 
   async function loadTraceForSession(id: string) {
     if (!id.trim()) return;
@@ -30,6 +31,12 @@ function TraceContent() {
   }
 
   useEffect(() => {
+    getRecentTraceSessions().then((sessions) => {
+      setRecentSessions(sessions);
+    });
+  }, []);
+
+  useEffect(() => {
     if (initialSession) {
       setSessionId(initialSession);
       loadTraceForSession(initialSession);
@@ -40,6 +47,17 @@ function TraceContent() {
     e.preventDefault();
     loadTraceForSession(sessionId);
   }
+
+  function handleSelectRecent(id: string) {
+    setSessionId(id);
+    loadTraceForSession(id);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', `/trace?session_id=${id}`);
+    }
+  }
+
+  const totalLatency = steps.reduce((sum, s) => sum + (s.latency_ms || 0), 0);
+  const totalTokens = steps.reduce((sum, s) => sum + (s.tokens_used || 0), 0);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
@@ -58,14 +76,14 @@ function TraceContent() {
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-3 mb-8">
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
           <input
             type="text"
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
-            placeholder="Enter Session ID (e.g. sess_xyz)..."
+            placeholder="Enter Session ID (e.g. test_triple_connect, sess_xyz)..."
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-sky-500 font-mono"
           />
         </div>
@@ -77,6 +95,76 @@ function TraceContent() {
           {loading ? 'Fetching...' : 'Load Trace'}
         </button>
       </form>
+
+      {/* Quick Pick Recent Sessions */}
+      {recentSessions.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-8 text-xs text-slate-500">
+          <span className="font-semibold text-slate-600">Recent Sessions:</span>
+          {recentSessions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => handleSelectRecent(s)}
+              className={`font-mono px-2.5 py-1 rounded-md border transition-colors ${
+                sessionId === s
+                  ? 'bg-sky-50 border-sky-300 text-sky-700 font-semibold'
+                  : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Summary Metrics Cards */}
+      {steps.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Total Pipeline Latency</span>
+            <div className="text-2xl font-bold text-slate-900 mt-1 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-sky-600" /> {totalLatency} ms
+            </div>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Total LLM Tokens</span>
+            <div className="text-2xl font-bold text-slate-900 mt-1 flex items-center gap-2">
+              <Cpu className="w-5 h-5 text-indigo-600" /> {totalTokens.toLocaleString()} tokens
+            </div>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Executed DAG Nodes</span>
+            <div className="text-2xl font-bold text-slate-900 mt-1 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-500" /> {steps.length} nodes
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visual LangGraph DAG Strip */}
+      {steps.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-5 mb-8 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-slate-700 text-xs font-bold uppercase tracking-wider">
+              LangGraph Execution Flow (DAG)
+            </span>
+            <span className="text-xs text-emerald-600 font-semibold inline-flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" /> All Nodes Completed
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1">
+            {steps.map((step, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-sky-500 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  {step.node_name}
+                </span>
+                {idx < steps.length - 1 && <span className="text-slate-300 font-bold">→</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {searched && steps.length === 0 && !loading && (
         <div className="p-8 text-center bg-white rounded-xl border border-slate-200 text-slate-500 text-sm">

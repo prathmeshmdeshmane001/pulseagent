@@ -105,6 +105,21 @@ async def chat_endpoint(payload: ChatRequest, db: AsyncSession = Depends(get_db)
         total_latency_ms=state.total_latency_ms
     )
 
+@router.get("/trace/recent/sessions")
+async def get_recent_trace_sessions(db: AsyncSession = Depends(get_db)):
+    stmt = select(RunTrace.session_id, RunTrace.id).order_by(RunTrace.id.desc()).limit(50)
+    res = await db.execute(stmt)
+    rows = res.all()
+    seen = set()
+    unique_sessions = []
+    for s, _ in rows:
+        if s and s not in seen:
+            seen.add(s)
+            unique_sessions.append(s)
+        if len(unique_sessions) >= 6:
+            break
+    return {"sessions": unique_sessions}
+
 @router.get("/trace/{session_id}", response_model=List[TraceStepResponse])
 async def get_trace_endpoint(session_id: str, db: AsyncSession = Depends(get_db)):
     stmt = select(RunTrace).where(RunTrace.session_id == session_id).order_by(RunTrace.id.asc())

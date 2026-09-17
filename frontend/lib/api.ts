@@ -66,6 +66,17 @@ export async function getTrace(sessionId: string): Promise<TraceStep[]> {
   return res.json();
 }
 
+export async function getRecentTraceSessions(): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_BASE}/trace/recent/sessions`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.sessions || [];
+  } catch {
+    return [];
+  }
+}
+
 export interface ActionItem {
   id: number;
   session_id: string;
