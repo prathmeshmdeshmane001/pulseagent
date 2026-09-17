@@ -4,6 +4,7 @@ export interface Evidence {
   timestamp: string;
   snippet: string;
   page_title: string;
+  sub_question_id?: string;
 }
 
 export interface SubQuestion {

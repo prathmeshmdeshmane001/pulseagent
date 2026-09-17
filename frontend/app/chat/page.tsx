@@ -146,6 +146,7 @@ export default function ChatPage() {
   const [highlightedEvidence, setHighlightedEvidence] = useState<number | null>(null);
   const [expandedSubQuestions, setExpandedSubQuestions] = useState<Record<number, boolean>>({});
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [selectedEvidence, setSelectedEvidence] = useState<{ ev: Evidence; index: number } | null>(null);
 
   useEffect(() => {
     resetSession();
@@ -376,16 +377,13 @@ export default function ChatPage() {
                               <span>{ev.source}</span>
                               <span className="text-slate-400 font-normal">— {ev.page_title}</span>
                             </span>
-                            {ev.permalink && (
-                              <a
-                                href={ev.permalink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 text-slate-400 hover:text-sky-600 font-medium text-[11px] transition-colors"
-                              >
-                                Open Source <ExternalLink className="w-3 h-3" />
-                              </a>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => setSelectedEvidence({ ev, index: citNumber })}
+                              className="inline-flex items-center gap-1 text-sky-700 hover:text-sky-900 font-medium text-[11px] transition-colors bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded border border-sky-200"
+                            >
+                              Inspect Source <ExternalLink className="w-3 h-3" />
+                            </button>
                           </div>
                           <p className="text-slate-600 italic font-mono text-[11px] leading-relaxed pl-1 border-l border-slate-200">
                             "{ev.snippet}"
@@ -511,6 +509,82 @@ export default function ChatPage() {
           </button>
         </div>
       </form>
+
+      {/* Source Document Inspector Modal */}
+      {selectedEvidence && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200">
+            <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800">
+                    [{selectedEvidence.index}] {selectedEvidence.ev.source}
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    {selectedEvidence.ev.timestamp ? new Date(selectedEvidence.ev.timestamp).toLocaleDateString() : 'Active'}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 leading-snug">
+                  {selectedEvidence.ev.page_title}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedEvidence(null)}
+                className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="py-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                  Retrieved Snippet Content
+                </span>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-800 leading-relaxed whitespace-pre-wrap">
+                  {selectedEvidence.ev.snippet}
+                </div>
+              </div>
+
+              {selectedEvidence.ev.sub_question_id && (
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="font-semibold">Associated Sub-Query:</span>
+                  <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[11px] text-slate-700">
+                    {selectedEvidence.ev.sub_question_id}
+                  </span>
+                </div>
+              )}
+
+              <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-900 text-xs">
+                <div className="font-semibold mb-1 flex items-center gap-1.5">
+                  <span>📌 Seeded Demo Record</span>
+                </div>
+                <p className="text-[11px] text-amber-800 leading-relaxed">
+                  This item is a simulated demo record from local test fixtures to showcase cross-SaaS RAG without requiring live third-party accounts. To query and open live documents directly in your organization's Notion, Gmail, or Atlassian cloud, connect your OAuth credentials.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <Link
+                href="/connect"
+                className="text-xs font-semibold text-sky-600 hover:text-sky-700 inline-flex items-center gap-1"
+              >
+                Connect Live {selectedEvidence.ev.source.toUpperCase()} Account ↗
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEvidence(null)}
+                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
