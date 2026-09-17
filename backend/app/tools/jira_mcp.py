@@ -55,40 +55,71 @@ async def search_jira(
         except Exception:
             access_token = None
 
-    if access_token and cloud_id and not is_ci:
+    if access_token and not is_ci:
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(
-                    f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3/search",
-                    headers={
-                        "Authorization": f"Bearer {access_token}",
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "jql": f'text ~ "{query}" ORDER BY updated DESC',
-                        "maxResults": 5
-                    }
-                )
-                if res.status_code == 200:
-                    data = res.json()
-                    results: List[Evidence] = []
-                    for issue in data.get("issues", []):
-                        key = issue.get("key", "ISSUE")
-                        summary = issue.get("fields", {}).get("summary", "")
-                        desc_text = f"Status: {issue.get('fields', {}).get('status', {}).get('name')}. Summary: {summary}."
-                        results.append(
-                            Evidence(
-                                source="jira",
-                                permalink=f"https://jira.atlassian.com/browse/{key}",
-                                timestamp=datetime.now(timezone.utc),
-                                snippet=desc_text,
-                                page_title=f"{key}: {summary}",
-                                sub_question_id=sub_question_id
-                            )
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                site_url = "https://jira.atlassian.com"
+                if not cloud_id:
+                    cres = await client.get(
+                        "https://api.atlassian.com/oauth/token/accessible-resources",
+                        headers={"Authorization": f"Bearer {access_token}"}
+                    )
+                    if cres.status_code == 200:
+                        resources = cres.json()
+                        if resources and isinstance(resources, list):
+                            cloud_id = resources[0].get("id")
+                            site_url = resources[0].get("url", site_url)
+
+                if cloud_id:
+                    jql_query = f'text ~ "{query}" ORDER BY updated DESC' if query.strip() else "ORDER BY updated DESC"
+                    # Try modern search/jql endpoint first
+                    res = await client.post(
+                        f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3/search/jql",
+                        headers={
+                            "Authorization": f"Bearer {access_token}",
+                            "Accept": "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "jql": jql_query,
+                            "maxResults": 5
+                        }
+                    )
+                    if res.status_code != 200:
+                        # Fallback to v2 search
+                        res = await client.post(
+                            f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/2/search",
+                            headers={
+                                "Authorization": f"Bearer {access_token}",
+                                "Accept": "application/json",
+                                "Content-Type": "application/json"
+                            },
+                            json={
+                                "jql": jql_query,
+                                "maxResults": 5
+                            }
                         )
-                    if results:
-                        return results
+
+                    if res.status_code == 200:
+                        data = res.json()
+                        results: List[Evidence] = []
+                        for issue in data.get("issues", []):
+                            key = issue.get("key", "ISSUE")
+                            summary = issue.get("fields", {}).get("summary", "")
+                            status_name = issue.get("fields", {}).get("status", {}).get("name", "Open")
+                            desc_text = f"Status: {status_name}. Summary: {summary}."
+                            results.append(
+                                Evidence(
+                                    source="jira",
+                                    permalink=f"{site_url}/browse/{key}",
+                                    timestamp=datetime.now(timezone.utc),
+                                    snippet=desc_text,
+                                    page_title=f"{key}: {summary}",
+                                    sub_question_id=sub_question_id
+                                )
+                            )
+                        if results:
+                            return results
         except Exception:
             pass
 
