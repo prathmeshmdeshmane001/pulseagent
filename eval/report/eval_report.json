@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-09-17T20:49:45.026721+00:00",
+  "mode": "ci",
+  "metrics": {
+    "accuracy_percent": 100.0,
+    "refusal_rate": "9/15",
+    "avg_latency_ms": 13.2,
+    "total_tokens_used": 36488,
+    "total_cases": 95,
+    "passed_cases": 95
+  },
+  "bucket_breakdown": {
+    "normal": {
+      "total": 30,
+      "passed": 30,
+      "accuracy": 100.0
+    },
+    "edge_cases": {
+      "total": 20,
+      "passed": 20,
+      "accuracy": 100.0
+    },
+    "adversarial": {
+      "total": 15,
+      "passed": 15,
+      "accuracy": 100.0
+    },
+    "missing_data": {
+      "total": 15,
+      "passed": 15,
+      "accuracy": 100.0
+    },
+    "tool_failures": {
+      "total": 15,
+      "passed": 15,
+      "accuracy": 100.0
+    }
+  }
+}

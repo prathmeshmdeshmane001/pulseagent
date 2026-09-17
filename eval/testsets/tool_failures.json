@@ -1,0 +1,17 @@
+[
+  {"id": "tf_01", "query": "Retrieve Jira tickets when Jira API is temporarily timing out", "simulate_failure": "jira", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_02", "query": "Check Notion specs when Notion gateway returns 504", "simulate_failure": "notion", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_03", "query": "Search Gmail communications when Gmail returns 500 error", "simulate_failure": "gmail", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_04", "query": "What are Project X sprint goals if Jira is unreachable?", "simulate_failure": "jira", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_05", "query": "What are Project X architecture milestones if Notion times out?", "simulate_failure": "notion", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_06", "query": "What are recent risks if email service is down?", "simulate_failure": "gmail", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_07", "query": "Query both Notion and Jira with Jira connection dropped", "simulate_failure": "jira", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_08", "query": "Query both Gmail and Notion with Notion offline", "simulate_failure": "notion", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_09", "query": "Query all three tools with Gmail API rate limited", "simulate_failure": "gmail", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_10", "query": "Summarize blockers when issue tracker socket closes", "simulate_failure": "jira", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_11", "query": "Retrieve architecture when docs server disconnects", "simulate_failure": "notion", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_12", "query": "Check kickoff notes when mail server times out", "simulate_failure": "gmail", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_13", "query": "Find PROJ-102 when Jira connection resets", "simulate_failure": "jira", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_14", "query": "Verify security policy when Notion throws 503", "simulate_failure": "notion", "expected_behavior": "graceful_degradation"},
+  {"id": "tf_15", "query": "Get stakeholder feedback when inbox is unavailable", "simulate_failure": "gmail", "expected_behavior": "graceful_degradation"}
+]

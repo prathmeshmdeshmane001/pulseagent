@@ -1,0 +1,26 @@
+[
+  {
+    "page_title": "PROJ-101: LangGraph Query Decomposition & Sub-question Dispatch",
+    "snippet": "Assignee: AI Agent Team. Status: DONE. Implemented decompose node with Gemini structured output and parallel dispatch across Gmail, Notion, and Jira MCP tools.",
+    "permalink": "https://pulseagent.atlassian.net/browse/PROJ-101",
+    "timestamp": "2026-09-02T16:00:00Z"
+  },
+  {
+    "page_title": "PROJ-102: Dual-Tier Memory with pgvector and Session Buffer",
+    "snippet": "Assignee: Backend Lead. Status: DONE. Built short-term sessions/messages tables and long-term durable fact extraction node promoting key facts to vector storage.",
+    "permalink": "https://pulseagent.atlassian.net/browse/PROJ-102",
+    "timestamp": "2026-09-05T18:30:00Z"
+  },
+  {
+    "page_title": "PROJ-103: Presidio PII Masking and Groq Citation Entailment",
+    "snippet": "Assignee: Security Lead. Status: DONE. Integrated Presidio analyzer and anonymizer with regex fallback, alongside Groq Llama-3.1 citation entailment checks.",
+    "permalink": "https://pulseagent.atlassian.net/browse/PROJ-103",
+    "timestamp": "2026-09-08T12:00:00Z"
+  },
+  {
+    "page_title": "PROJ-104: Human-in-the-Loop Risky Action Permission Gating",
+    "snippet": "Assignee: Security Lead. Status: DONE. Sensitive operations write to pending_actions table, generate email notification, and block until explicit /actions/{id}/approve call.",
+    "permalink": "https://pulseagent.atlassian.net/browse/PROJ-104",
+    "timestamp": "2026-09-11T14:45:00Z"
+  }
+]

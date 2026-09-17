@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="100%" height="100%">
+  <rect width="900" height="380" fill="#f8fafc" rx="16" />
+  <text x="450" y="40" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#0f172a">PulseAgent 5-Stage Guardrail Pipeline</text>
+
+  <!-- Flow Steps -->
+  <!-- Stage 1 -->
+  <g transform="translate(40, 80)">
+    <rect width="145" height="110" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="2" />
+    <text x="72" y="28" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#b91c1c">STAGE 1</text>
+    <text x="72" y="48" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Input Classifier</text>
+    <text x="72" y="72" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Groq Llama-3.1</text>
+    <text x="72" y="90" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#dc2626">Blocks Jailbreaks</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 185 135 L 210 135" stroke="#94a3b8" stroke-width="2" />
+
+  <!-- Stage 2 -->
+  <g transform="translate(210, 80)">
+    <rect width="145" height="110" rx="8" fill="#ffffff" stroke="#f59e0b" stroke-width="2" />
+    <text x="72" y="28" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#b45309">STAGE 2</text>
+    <text x="72" y="48" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">PII Anonymizer</text>
+    <text x="72" y="72" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Presidio Engine</text>
+    <text x="72" y="90" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#d97706">Masks Emails/SSN</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 355 135 L 380 135" stroke="#94a3b8" stroke-width="2" />
+
+  <!-- Stage 3 -->
+  <g transform="translate(380, 80)">
+    <rect width="145" height="110" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="2" />
+    <text x="72" y="28" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1d4ed8">STAGE 3</text>
+    <text x="72" y="48" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Citation Entailment</text>
+    <text x="72" y="72" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Groq Fast Model</text>
+    <text x="72" y="90" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#2563eb">Verifies [1], [2]</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 525 135 L 550 135" stroke="#94a3b8" stroke-width="2" />
+
+  <!-- Stage 4 -->
+  <g transform="translate(550, 80)">
+    <rect width="145" height="110" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="2" />
+    <text x="72" y="28" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#6d28d9">STAGE 4</text>
+    <text x="72" y="48" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Output Schema</text>
+    <text x="72" y="72" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Pydantic v2</text>
+    <text x="72" y="90" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#7c3aed">Validates Types</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 695 135 L 720 135" stroke="#94a3b8" stroke-width="2" />
+
+  <!-- Stage 5 -->
+  <g transform="translate(720, 80)">
+    <rect width="145" height="110" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="2" />
+    <text x="72" y="28" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#047857">STAGE 5</text>
+    <text x="72" y="48" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Permission Gate</text>
+    <text x="72" y="72" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Human-in-Loop</text>
+    <text x="72" y="90" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#059669">Email Confirmation</text>
+  </g>
+
+  <!-- Observability Footer -->
+  <g transform="translate(40, 230)">
+    <rect width="820" height="90" rx="8" fill="#0f172a" />
+    <text x="410" y="35" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#38bdf8">Unified Observability &amp; Trace Logging</text>
+    <text x="410" y="60" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#94a3b8">Every decision (blocked, redacted, entailed, gated) writes to run_traces and mirrors to LangSmith</text>
+  </g>
+</svg>

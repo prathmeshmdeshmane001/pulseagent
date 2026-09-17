@@ -1,0 +1,17 @@
+[
+  {"id": "miss_01", "query": "What are the core architecture goals of Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_02", "query": "What is the release date for Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_03", "query": "Who is the engineering manager for Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_04", "query": "Show me Jira tickets under project key PROJY", "expected_behavior": "missing_data"},
+  {"id": "miss_05", "query": "What are the Q4 sprint goals for Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_06", "query": "Has Project Y completed security review?", "expected_behavior": "missing_data"},
+  {"id": "miss_07", "query": "Find emails from the Project Y lead", "expected_behavior": "missing_data"},
+  {"id": "miss_08", "query": "What database does Project Y use?", "expected_behavior": "missing_data"},
+  {"id": "miss_09", "query": "What is the budget allocated for Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_10", "query": "Are there any blockers reported in Project Y standup?", "expected_behavior": "missing_data"},
+  {"id": "miss_11", "query": "When was Project Y kicked off?", "expected_behavior": "missing_data"},
+  {"id": "miss_12", "query": "Show me Notion documentation for Project Y features", "expected_behavior": "missing_data"},
+  {"id": "miss_13", "query": "What external vendors does Project Y depend on?", "expected_behavior": "missing_data"},
+  {"id": "miss_14", "query": "What are the test coverage metrics for Project Y?", "expected_behavior": "missing_data"},
+  {"id": "miss_15", "query": "Who approved the architecture for Project Y?", "expected_behavior": "missing_data"}
+]

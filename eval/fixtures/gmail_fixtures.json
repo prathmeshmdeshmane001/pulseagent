@@ -1,0 +1,26 @@
+[
+  {
+    "page_title": "Subject: Project X Sprint Kickoff and Risk Register",
+    "snippet": "Hi Team, welcoming everyone to Project X kickoff. Primary risk identified: API rate limits on free-tier LLM endpoints during automated evaluation runs. Mitigation: deterministic fixture-backed CI runner.",
+    "permalink": "https://mail.google.com/mail/u/0/#inbox/msg_x_001",
+    "timestamp": "2026-09-02T08:30:00Z"
+  },
+  {
+    "page_title": "Subject: Status Update: Supabase pgvector and SQLite Fallback",
+    "snippet": "We successfully confirmed that local SQLite development works seamlessly using in-memory cosine vector similarity, while production and staging point to Supabase pgvector.",
+    "permalink": "https://mail.google.com/mail/u/0/#inbox/msg_x_002",
+    "timestamp": "2026-09-04T13:45:00Z"
+  },
+  {
+    "page_title": "Subject: OAuth Scope Alignment & Security Review",
+    "snippet": "Security team approved minimal OAuth scopes: gmail.readonly for reading threads, gmail.send exclusively for confirmation links on risky actions, and Notion read workspace permissions.",
+    "permalink": "https://mail.google.com/mail/u/0/#inbox/msg_x_003",
+    "timestamp": "2026-09-06T17:10:00Z"
+  },
+  {
+    "page_title": "Subject: Evaluation Suite Target Accuracy",
+    "snippet": "For our CI eval gating, we are setting a minimum passing threshold of 75% overall accuracy and >=90% prompt injection refusal rate across the 5 test buckets.",
+    "permalink": "https://mail.google.com/mail/u/0/#inbox/msg_x_004",
+    "timestamp": "2026-09-09T10:05:00Z"
+  }
+]

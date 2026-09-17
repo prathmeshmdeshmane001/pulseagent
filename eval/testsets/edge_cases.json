@@ -1,0 +1,22 @@
+[
+  {"id": "edge_01", "query": "goals?", "expected_answer_summary": "Project X architecture and roadmap goals", "expected_sources": ["notion"]},
+  {"id": "edge_02", "query": "PROJ-101", "expected_answer_summary": "PROJ-101 decomposition ticket details", "expected_sources": ["jira"]},
+  {"id": "edge_03", "query": "what were those notes from earlier about Q3?", "expected_answer_summary": "target release and roadmap milestones for Q3", "expected_sources": ["notion"]},
+  {"id": "edge_04", "query": "tell me about emails", "expected_answer_summary": "kickoff risks, pgvector status, and OAuth scopes", "expected_sources": ["gmail"]},
+  {"id": "edge_05", "query": "any blockers currently?", "expected_answer_summary": "rate limits discussed in kickoff, resolved pgvector blocker", "expected_sources": ["gmail", "jira"]},
+  {"id": "edge_06", "query": "...", "expected_answer_summary": "retrieved context or polite prompt for clarification", "expected_sources": ["notion"]},
+  {"id": "edge_07", "query": "Show me tickets assigned to DevOps Lead", "expected_answer_summary": "no specific ticket assigned to DevOps lead in current fixtures or PROJ tickets", "expected_sources": ["jira"]},
+  {"id": "edge_08", "query": "Which Notion page was created first?", "expected_answer_summary": "Project X Architecture on Sept 1", "expected_sources": ["notion"]},
+  {"id": "edge_09", "query": "Is there any mention of Kubernetes?", "expected_answer_summary": "no, deployment topology specifies Vercel and Render", "expected_sources": ["notion"]},
+  {"id": "edge_10", "query": "Give me a one sentence summary of the security spec", "expected_answer_summary": "Presidio PII redaction and Groq prompt injection guardrails", "expected_sources": ["notion"]},
+  {"id": "edge_11", "query": "Status of tickets PROJ-101 through PROJ-104", "expected_answer_summary": "all completed or in progress across decomposition, memory, guardrails, and gating", "expected_sources": ["jira"]},
+  {"id": "edge_12", "query": "Who sent the kickoff email?", "expected_answer_summary": "kickoff email discussing team onboarding and risk mitigation", "expected_sources": ["gmail"]},
+  {"id": "edge_13", "query": "What is the token usage expectation?", "expected_answer_summary": "tracked in run_traces and optimized on free tier", "expected_sources": ["notion"]},
+  {"id": "edge_14", "query": "Can I connect multiple Notion workspaces?", "expected_answer_summary": "OAuth connection stores token in oauth_tokens table", "expected_sources": ["notion"]},
+  {"id": "edge_15", "query": "Tell me about privacy safeguards without mentioning architecture", "expected_answer_summary": "Presidio redaction of emails, phone numbers, and SSNs", "expected_sources": ["notion"]},
+  {"id": "edge_16", "query": "Explain how decompose node works in 10 words", "expected_answer_summary": "breaks query into subquestions dispatched across Notion, Gmail, Jira", "expected_sources": ["jira"]},
+  {"id": "edge_17", "query": "What was decided regarding SendGrid?", "expected_answer_summary": "used for email confirmations or fallback to Gmail API", "expected_sources": ["notion"]},
+  {"id": "edge_18", "query": "Show me the permalinks for all Jira tickets", "expected_answer_summary": "links to PROJ-101, PROJ-102, PROJ-103, PROJ-104", "expected_sources": ["jira"]},
+  {"id": "edge_19", "query": "Is local SQLite supported?", "expected_answer_summary": "yes via in-memory cosine vector fallback", "expected_sources": ["gmail"]},
+  {"id": "edge_20", "query": "Summarize all 3 sources in 3 bullet points", "expected_answer_summary": "Notion specs, Gmail emails on risks, Jira tickets for features", "expected_sources": ["notion", "gmail", "jira"]}
+]
