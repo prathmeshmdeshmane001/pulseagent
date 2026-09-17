@@ -67,6 +67,8 @@ function ConnectContent() {
 
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const isNotionConnected = Boolean(integrations.find((i) => i.id === 'notion')?.connected);
+  const isJiraConnected = Boolean(integrations.find((i) => i.id === 'jira')?.connected);
+  const isGmailConnected = Boolean(integrations.find((i) => i.id === 'gmail')?.connected);
 
   const dismissBanner = () => {
     setBannerDismissed(true);
@@ -127,6 +129,61 @@ function ConnectContent() {
             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
               <strong>Configuration Notice:</strong> <code>NOTION_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-amber-700 hover:text-amber-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Jira Notification Banners */}
+      {!bannerDismissed && (isJiraConnected || status === 'jira_connected') && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>
+              <strong>Jira Workspace Connected!</strong> PulseAgent has active access to search your Jira issues, sprint tasks, and blockers live in Chat.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-emerald-700 hover:text-emerald-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {!bannerDismissed && !isJiraConnected && error === 'jira_auth_failed' && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>
+              <strong>Jira Authentication Failed:</strong> Please verify that Callback URL in Atlassian Developer Console is set to <code>http://localhost:8000/auth/jira/callback</code> and Classic Jira scopes (<code>read:jira-work read:jira-user offline_access</code>) are enabled under Permissions.
+            </span>
+          </div>
+          <button
+            onClick={dismissBanner}
+            className="text-rose-700 hover:text-rose-900 font-bold ml-4 text-sm"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {!bannerDismissed && status === 'missing_jira_client_id' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>Configuration Notice:</strong> <code>JIRA_OAUTH_CLIENT_ID</code> is not set in your <code>.env</code> file.
             </span>
           </div>
           <button

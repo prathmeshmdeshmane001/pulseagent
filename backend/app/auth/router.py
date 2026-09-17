@@ -167,44 +167,71 @@ async def gmail_callback(code: str = Query(...), db: AsyncSession = Depends(get_
     return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=gmail_connected")
 
 # --- Atlassian Jira OAuth ---
+# --- Atlassian Jira OAuth ---
 @router.get("/jira/login")
-async def jira_login():
+async def jira_login(request: Request):
     client_id = os.getenv("JIRA_OAUTH_CLIENT_ID")
     redirect_uri = os.getenv("JIRA_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/jira/callback")
-    if not client_id:
-        return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=missing_jira_client_id")
     
-    scopes = "read:jira-work read:jira-user offline_access"
-    url = (
-        f"https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id={client_id}"
-        f"&scope={scopes}&redirect_uri={redirect_uri}&response_type=code&prompt=consent"
-    )
+    origin = FRONTEND_URL
+    referer = request.headers.get("referer")
+    if referer:
+        from urllib.parse import urlparse
+        parsed = urlparse(referer)
+        if parsed.scheme and parsed.netloc:
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+
+    if not client_id:
+        return RedirectResponse(url=f"{origin}/connect?status=missing_jira_client_id")
+    
+    import urllib.parse
+    scopes = os.getenv("JIRA_OAUTH_SCOPES", "read:jira-work read:jira-user offline_access")
+    params = {
+        "audience": "api.atlassian.com",
+        "client_id": client_id,
+        "scope": scopes,
+        "redirect_uri": redirect_uri,
+        "state": origin,
+        "response_type": "code",
+        "prompt": "consent"
+    }
+    url = f"https://auth.atlassian.com/authorize?{urllib.parse.urlencode(params)}"
     return RedirectResponse(url=url)
 
 @router.get("/jira/callback")
-async def jira_callback(code: str = Query(...), db: AsyncSession = Depends(get_db)):
+async def jira_callback(
+    code: str = Query(...),
+    state: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    target_frontend = state if state and state.startswith("http") else FRONTEND_URL
     client_id = os.getenv("JIRA_OAUTH_CLIENT_ID", "")
     client_secret = os.getenv("JIRA_OAUTH_CLIENT_SECRET", "")
     redirect_uri = os.getenv("JIRA_OAUTH_REDIRECT_URI", "http://localhost:8000/auth/jira/callback")
 
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            "https://auth.atlassian.com/oauth/token",
-            json={
-                "grant_type": "authorization_code",
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "code": code,
-                "redirect_uri": redirect_uri
-            }
-        )
-        if res.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}/connect?error=jira_auth_failed")
-        data = res.json()
-        access_token = data.get("access_token")
-        refresh_token = data.get("refresh_token")
-        expires_in = data.get("expires_in")
-        if access_token:
-            await store_token("jira", "default_user", access_token, refresh_token, expires_in, db)
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                "https://auth.atlassian.com/oauth/token",
+                json={
+                    "grant_type": "authorization_code",
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "code": code,
+                    "redirect_uri": redirect_uri
+                }
+            )
+            if res.status_code != 200:
+                print(f"Jira OAuth Error: {res.status_code} - {res.text}")
+                return RedirectResponse(url=f"{target_frontend}/connect?error=jira_auth_failed")
+            data = res.json()
+            access_token = data.get("access_token")
+            refresh_token = data.get("refresh_token")
+            expires_in = data.get("expires_in")
+            if access_token:
+                await store_token("jira", "default_user", access_token, refresh_token, expires_in, db)
 
-    return RedirectResponse(url=f"{FRONTEND_URL}/connect?status=jira_connected")
+        return RedirectResponse(url=f"{target_frontend}/connect?status=jira_connected")
+    except Exception as e:
+        print(f"Jira OAuth exception: {e}")
+        return RedirectResponse(url=f"{target_frontend}/connect?error=jira_auth_failed")
