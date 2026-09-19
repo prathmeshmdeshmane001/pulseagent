@@ -7,7 +7,7 @@
 [![CI](https://github.com/prathmeshmdeshmane001/pulseagent/actions/workflows/eval.yml/badge.svg)](https://github.com/prathmeshmdeshmane001/pulseagent/actions/workflows/eval.yml)
 
 > **PulseAgent** is an agentic RAG assistant over live **Notion**, **Gmail**, and **Jira** with persistent dual-tier memory, 5-stage guardrails, structured observability via LangSmith, and automated CI-gated evaluations built entirely on a **$0 stack**.
-
+https://github.com/user-attachments/assets/425cf336-5372-4c80-a709-d8c8ad919a5f
 ---
 
 ## 🏛️ System Architecture
