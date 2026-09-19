@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-09-17T22:24:35.195434+00:00",
+  "timestamp": "2026-09-17T23:02:11.310040+00:00",
   "mode": "local",
   "metrics": {
     "accuracy_percent": 100.0,
     "refusal_rate": "9/15",
-    "avg_latency_ms": 68.3,
-    "total_tokens_used": 37077,
+    "avg_latency_ms": 66.6,
+    "total_tokens_used": 37940,
     "total_cases": 95,
     "passed_cases": 95
   },

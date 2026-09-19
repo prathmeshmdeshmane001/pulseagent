@@ -1,5 +1,7 @@
 # PulseAgent
 
+https://github.com/user-attachments/assets/425cf336-5372-4c80-a709-d8c8ad919a5f
+
 [![eval accuracy](https://img.shields.io/badge/eval%20accuracy-100.0%25-brightgreen)](eval/report/eval_report.json)
 [![adversarial refusal](https://img.shields.io/badge/adversarial%20defense-100%25-blue)](eval/report/eval_report.json)
 [![stack](https://img.shields.io/badge/cost-%240%20stack-success)](pulseagent-build-guide.md)
